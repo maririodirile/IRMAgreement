@@ -276,7 +276,7 @@ label{display:block;font-size:.82rem;font-weight:600;color:var(--muted)}
 .h{font-weight:700;margin:12px 0 4px;display:flex;gap:10px}.i{display:flex;gap:10px;margin:3px 0}.n{flex:none;width:38px}.l2{margin-left:38px}.l2 .n{width:46px}.b{margin:4px 0 4px 48px}.p0{margin:6px 0}
 canvas{width:100%;height:180px;border:2px dashed var(--accent);border-radius:10px;background:#fff;touch-action:none;display:block;margin:6px 0}
 .msg{padding:12px 14px;border-radius:8px;margin-top:12px}.msg.err{background:var(--crit-bg);color:var(--crit)}.msg.ok{background:var(--good-bg);color:var(--good)}
-.btn.primary{padding:12px 22px;font-size:.95rem}
+.btn.primary{padding:12px 22px;font-size:.95rem}.btn[aria-pressed=true]{background:var(--accent);color:#fff}
 </style></head><body>
 <header class="lh"><div class="wrap lh-in">
 <div class="lh-top"><div class="lh-addr">National Business Initiative for Growth Development and Democracy NPC<br><b>Physical:</b> 61 Katherine Street, Dennehof, Sandton, 2196<br><b>Web:</b> www.nbi.org.za | <b>Tel:</b> 011 544 6000<br><b>Reg. no:</b> 1995/003141/08 | <b>Vat No:</b> 4070158433</div>
@@ -347,20 +347,21 @@ const sha=async t=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new T
 const blk="display:inline-block;border-bottom:1px solid #000;height:14px;";
 
 async function makePdf(d){
+ window.scrollTo(0,0);
  const L=d.col==="ewc"?`<img src="${IMG.l}" style="height:64px">`:`<b style="font-size:15pt">${esc(d.collegeName)}</b>`,c="border:1px solid #000;padding:8px 10px;vertical-align:top;width:50%;line-height:1.9";
- const el=document.createElement("div");el.style.cssText="position:fixed;left:-9999px;top:0;background:#fff;color:#000;width:174mm;font:10.5pt/1.28 Carlito,Calibri,Arial,sans-serif";
+ const el=document.createElement("div");el.style.cssText="background:#fff;color:#000;width:174mm;font:10.5pt/1.28 Carlito,Calibri,Arial,sans-serif";
  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">${L}<img src="${IMG.r}" style="height:60px"></div>
  <p style="text-align:center;font-weight:700;text-decoration:underline">IRM ENTERPRISE ACCELERATION AGREEMENT BETWEEN NATIONAL BUSINESS INITIATIVE (NBI) AND “THE PARTICIPANT”</p>
  <p style="text-align:center"><b>Company Name:</b> ${esc(d.company)}<br>Company Registration Number: ${esc(d.reg)}<br><b>Programme Participant:</b> ${esc(d.owner)} hereinafter referred to as “The Participant”</p><p>Date: ${esc(d.date)}</p>${$("#doc").innerHTML}
  <div class="h"><span class="n">10.</span><span>Acceptance:</span></div><p style="margin:0 0 22px">The terms of the enterprise development agreement set out in this letter are hereby accepted by “The Participant”:</p>
  <p style="margin:0 0 6px 24px">I <u>&nbsp;&nbsp;${esc(d.name)}&nbsp;&nbsp;</u> (Participant Full Name) confirm that I have read, understood, and agreed with the terms and conditions specified in this letter.</p>
- <div style="display:flex;gap:6px;margin:4px 0 14px 24px"><div style="width:48%"><div style="height:56px;border-bottom:1px solid #000"><img src="${d.png}" style="height:52px"></div>Signed</div><div style="width:44%"><div style="height:56px;border-bottom:1px solid #000;padding-top:34px">${esc(d.date)}</div>Date</div></div>
+ <div style="display:flex;gap:6px;margin:4px 0 14px 24px"><div style="width:48%"><div style="height:56px;border-bottom:1px solid #000"><img src="${d.png}" style="height:52px;max-width:100%;object-fit:contain"></div>Signed</div><div style="width:44%"><div style="height:56px;border-bottom:1px solid #000;padding-top:34px">${esc(d.date)}</div>Date</div></div>
  <div class="h"><span class="n">11.</span><span>Authorisation</span></div><table style="width:100%;border-collapse:collapse"><tr>
  <td style="${c}"><b>National Business Initiative for Growth Development and Democracy</b><br><br>Signed: <span style="${blk}width:150px"></span><br>By<br>Who warrants his/her authority to sign as Technical Advisor:<br><br>Date: <span style="${blk}width:190px"></span></td>
  <td style="${c}"><b>The IRM Hub: ${esc(d.collegeName)}</b><br><br><br>Signed by: <span style="${blk}width:150px"></span><br>Who warrants his/ her authority to sign as Centre Manager (IRM Hub):<br><br>Date: <span style="${blk}width:190px"></span></td></tr></table><p style="text-align:center"><b>END</b></p>`;
- document.body.append(el);
- try{return await html2pdf().set({margin:[12,18,16,18],image:{type:"jpeg",quality:.92},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4"},pagebreak:{mode:["css","legacy"],avoid:[".i",".h","tr","img"]}})
-  .from(el).toPdf().get("pdf").then(pdf=>{const n=pdf.internal.getNumberOfPages();for(let i=1;i<=n;i++){pdf.setPage(i);pdf.setFontSize(9);pdf.text("Page "+i+" of "+n,105,290,{align:"center"})}}).outputPdf("blob")}finally{el.remove()}}
+
+ try{return await html2pdf().set({margin:[12,18,16,18],image:{type:"jpeg",quality:.92},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4"},pagebreak:{mode:["css","legacy"],avoid:[".i",".h","tr","img"]}})
+  .from(el).toPdf().get("pdf").then(pdf=>{const n=pdf.internal.getNumberOfPages();for(let i=1;i<=n;i++){pdf.setPage(i);pdf.setFontSize(9);pdf.text("Page "+i+" of "+n,105,290,{align:"center"})}}).outputPdf("blob")}finally{}}
 
 if(Q.has("admin")){
  app.innerHTML=`<div class="ag card"><h2>Create a signing link</h2><p class="sub">Fill in the participant's details, then copy the link and send it to them.</p>
@@ -374,7 +375,7 @@ if(Q.has("admin")){
  <div class="doc" id="doc" tabindex="0" aria-label="Agreement text">${$("#agr").innerHTML}</div>
  <div id="sign"><h3>Acceptance</h3><p>The terms of the enterprise development agreement are accepted by “The Participant”.</p>
  <div class="row">${inp("sn","Your full name (appears in clause 10)",Q.get("o"))}${inp("dt","Date",new Date().toISOString().slice(0,10),"date")}</div>
- <label>Draw your signature</label><canvas id="cv"></canvas><button class="btn" id="clr" type="button">Clear signature</button>
+ <label>Your signature</label><div style="display:flex;gap:8px;margin:6px 0"><button class="btn" id="md" type="button" aria-pressed="true">Draw</button><button class="btn" id="mu" type="button" aria-pressed="false">Upload a picture</button></div><div id="pd"><canvas id="cv"></canvas><button class="btn" id="clr" type="button">Clear signature</button></div><div id="pu" hidden><input id="up" type="file" accept="image/*"><p class="sub">Use a clear photo of your signature on white paper.</p><img id="pv" alt="Your signature preview" hidden style="max-width:100%;max-height:120px;border:1px solid var(--line);border-radius:8px;background:#fff"></div>
  <p><label style="font-weight:400;color:var(--ink)"><input type="checkbox" id="ag">I have read, understood and agree with the terms of this agreement, and I am authorised to sign for the business.</label></p>
  <button class="btn primary" id="go">Sign and download PDF</button></div><div id="res" role="status"></div></div>`;
  if(Q.get("dur")){const d=$(".dur");if(d)d.textContent=Q.get("dur")}
@@ -384,10 +385,17 @@ if(Q.has("admin")){
  cv.onpointerdown=e=>{dr=1;cv.setPointerCapture(e.pointerId);x.beginPath();x.moveTo(...ps(e))};
  cv.onpointermove=e=>{if(dr){x.lineTo(...ps(e));x.stroke();sg=1}};cv.onpointerup=()=>dr=0;
  $("#clr").onclick=()=>{x.clearRect(0,0,cv.width,cv.height);sg=0};
+ let mode="draw",up="";
+ const setMode=m=>{mode=m;$("#pd").hidden=m!=="draw";$("#pu").hidden=m!=="up";$("#md").setAttribute("aria-pressed",m==="draw");$("#mu").setAttribute("aria-pressed",m==="up")};
+ $("#md").onclick=()=>setMode("draw");$("#mu").onclick=()=>setMode("up");
+ $("#up").onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader;fr.onload=()=>{const im=new Image;
+  im.onload=()=>{const k=Math.min(1,700/im.width),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);up=c.toDataURL("image/jpeg",.9);$("#pv").src=up;$("#pv").hidden=false};
+  im.onerror=()=>{up="";$("#res").className="msg err";$("#res").textContent="That file could not be read as a picture. Try a JPG or PNG."};im.src=fr.result};fr.readAsDataURL(f)};
+ const sigData=()=>mode==="up"?up:(sg?cv.toDataURL("image/png"):"");
  $("#go").onclick=async()=>{const R=$("#res"),v=i=>$("#"+i).value.trim();
-  if(!$("#col").value||!v("n")||!v("r")||!v("o")||!v("sn")||!$("#ag").checked||!sg){R.className="msg err";R.textContent="Choose your college, complete your details, draw your signature and tick the confirmation box.";return}
+  if(!$("#col").value||!v("n")||!v("r")||!v("o")||!v("sn")||!$("#ag").checked||!sigData()){R.className="msg err";R.textContent="Choose your college, complete your details, add your signature (draw or upload a picture) and tick the confirmation box.";return}
   $("#go").disabled=true;R.className="msg";R.textContent="Preparing your signed PDF…";
-  const col=$("#col").value,d={col,collegeName:COLS[col],company:v("n"),reg:v("r"),owner:v("o"),name:v("sn"),date:v("dt"),png:cv.toDataURL("image/png")};
+  const col=$("#col").value,d={col,collegeName:COLS[col],company:v("n"),reg:v("r"),owner:v("o"),name:v("sn"),date:v("dt"),png:sigData()};
   try{const blob=await makePdf(d),fn="ED_Agreement_"+d.company.replace(/[^A-Za-z0-9]+/g,"_")+"_"+d.date+".pdf",u=URL.createObjectURL(blob),a=document.createElement("a");
    a.href=u;a.download=fn;document.body.append(a);a.click();a.remove();
    let sent=false;if(API){try{const b64=await new Promise(z=>{const f=new FileReader;f.onload=()=>z(f.result.split(",")[1]);f.readAsDataURL(blob)});
